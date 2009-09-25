@@ -1,0 +1,16 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2794
+
+phpErrorMarker set makeprg et errroformat automaticaly for php file.
+A call to :make launch php syntax checking and set sign (:h sign for more informations) if there are any errors in file.
+Some variables may be interesting :
+g:phpErrorMarker#autowrite : if true, file will be automaticaly write before syntax checking, default is "0".
+g:phpErrorMarker#php : path to php binary, default is "php".
+g:phpErrorMarker#textError : sign used for error, default is "><".
+g:phpErrorMarker#textWarning : sign used for warning, default is "--".
+g:phpErrorMarker#automake : if true, make is automaticaly done after a write command like ":w", default is "0".
+ g:phpErrorMarker#openQuickfix : if true, quickfix window will be automaticaly opened after ":make".
+Set these variables in your .vimrc to override default values, like that :
+
+let g:phpErrorMarker#autowrite = 1
+
+Please, report any bug to phpErrorMarker.vim[..at..]mageekbox.net. 
