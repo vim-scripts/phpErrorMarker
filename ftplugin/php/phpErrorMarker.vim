@@ -2,13 +2,15 @@
 " Author:					Frédéric Hardy - http://blog.mageekbox.net
 " Date:						Fri Sep 25 14:48:22 CEST 2009
 " Licence:					GPL version 2.0 license
-" GetLatestVimScripts:	
+" GetLatestVimScripts:	2794 11432 :AutoInstall: phpErrorMarker.vim
 "=============================================================================
 if (!exists('phpErrorMarker#disable') || phpErrorMarker#disable <= 0) && !exists('b:phpErrorMarker_loaded')
 	let b:phpErrorMarker_loaded = 1
 
 	if &cp
 		echomsg 'No compatible mode is required by phpErrorMarker'
+	elseif !has('signs')
+		echomsg 'Signs feature is required by phpErrorMarker'
 	else
 		let s:cpo = &cpo
 		setlocal cpo&vim
@@ -17,12 +19,6 @@ if (!exists('phpErrorMarker#disable') || phpErrorMarker#disable <= 0) && !exists
 		command -buffer UnmarkPhpErrors call phpErrorMarker#unmarkErrors()
 		
 		call phpErrorMarker#init()
-
-		augroup phpErrorMarker
-			au!
-			au QuickFixCmdPre make call phpErrorMarker#write()
-			au QuickFixCmdPost make call phpErrorMarker#markErrors()
-		augroup end
 
 		let &cpo = s:cpo
 		unlet s:cpo
