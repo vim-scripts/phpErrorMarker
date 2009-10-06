@@ -27,11 +27,11 @@ if !exists('g:phpErrorMarker#errorformat')
 endif
 
 if !exists('g:phpErrorMarker#textError')
-	let g:phpErrorMarker#textError = '><'
+	let g:phpErrorMarker#textError = '!!'
 endif
 
 if !exists('g:phpErrorMarker#textWarning')
-	let phpErrorMarker#textWarning = '--'
+	let phpErrorMarker#textWarning = '!'
 endif
 
 highlight default phpErrorMarkerWarning guifg=LightRed ctermfg=lightRed term=underline cterm=underline gui=underline
@@ -40,22 +40,11 @@ highlight default phpErrorMarkerError guifg=Red ctermfg=Red term=underline cterm
 execute 'sign define phpErrorMarkerError text=' . g:phpErrorMarker#textError . ' linehl=phpErrorMarkerError texthl=phpErrorMarkerError'
 execute 'sign define phpErrorMarkerWarning text=' . g:phpErrorMarker#textWarning . ' linehl=phpErrorMarkerWarning texthl=phpErrorMarkerWarning'
 
-"init {{{1
-function phpErrorMarker#init()
-	let &makeprg = g:phpErrorMarker#php . ' -l %'
-	let &errorformat = g:phpErrorMarker#errorformat
-
-	augroup phpErrorMarker
-		au! * <buffer>
-		au QuickFixCmdPre <buffer> call phpErrorMarker#autowrite()
-		au BufWritePost <buffer> call phpErrorMarker#automake()
-		au QuickFixCmdPost <buffer> call phpErrorMarker#markErrors()
-	augroup end
-endfunction
 "automake {{{1
 function phpErrorMarker#automake()
 	if g:phpErrorMarker#automake
-		silent make
+		silent! make
+		normal 
 	endif
 endfunction
 "autowrite {{{1
@@ -93,5 +82,47 @@ function phpErrorMarker#unmarkErrors()
 
 		redraw
 	endif
+endfunction
+" vim:filetype=vim foldmethod=marker shiftwidth=3 tabstop=3
+"makeVimball {{{1
+function phpErrorMarker#makeVimball()
+	split phpErrorMarkerVimball
+
+	setlocal bufhidden=delete
+	setlocal nobuflisted
+	setlocal noswapfile
+
+	let files = 0
+
+	for file in split(globpath(&runtimepath, '**/phpErrorMarker*'), "\n")
+		for runtimepath in split(&runtimepath, ',')
+			if file =~ '^' . runtimepath
+				if getftype(file) != 'dir'
+					let files += 1
+					call setline(files, substitute(file, '^' . runtimepath . '/', '', ''))
+				else
+					for subFile in split(glob(file . '/**'), "\n")
+						if getftype(subFile) != 'dir'
+							let files += 1
+							call setline(files, substitute(subFile, '^' . runtimepath . '/', '', ''))
+						endif
+					endfor
+				endif
+			endif
+		endfor
+	endfor
+
+	try
+		execute '%MkVimball! phpErrorMarker'
+
+		setlocal nomodified
+		bwipeout
+
+		echomsg 'Vimball is in ''' . getcwd() . ''''
+	catch /.*/
+		echohl ErrorMsg
+		echomsg v:exception
+		echohl None
+	endtry
 endfunction
 " vim:filetype=vim foldmethod=marker shiftwidth=3 tabstop=3

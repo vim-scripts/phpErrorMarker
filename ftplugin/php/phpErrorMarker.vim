@@ -15,10 +15,19 @@ if (!exists('phpErrorMarker#disable') || phpErrorMarker#disable <= 0) && !exists
 		let s:cpo = &cpo
 		setlocal cpo&vim
 
+		let &makeprg = g:phpErrorMarker#php . ' -ln %'
+		let &errorformat = g:phpErrorMarker#errorformat
+
+		augroup phpErrorMarker
+			au! * <buffer>
+			au QuickFixCmdPre <buffer> call phpErrorMarker#autowrite()
+			au BufWritePost <buffer> call phpErrorMarker#automake()
+			au QuickFixCmdPost <buffer> call phpErrorMarker#markErrors()
+		augroup end
+
 		command -buffer MarkPhpErrors call phpErrorMarker#markErrors()
 		command -buffer UnmarkPhpErrors call phpErrorMarker#unmarkErrors()
-		
-		call phpErrorMarker#init()
+		command -nargs=0 PhpErrorMarkerVimball call phpErrorMarker#makeVimball()
 
 		let &cpo = s:cpo
 		unlet s:cpo
